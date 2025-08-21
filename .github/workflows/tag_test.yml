@@ -18,6 +18,17 @@ jobs:
           ref: ${{ github.ref }}
           fetch-depth: 0
 
+      - name: Check tagged branch
+        run: |
+          BRANCHS=$(git branch --contains ${{ github.ref_name }})
+          set -- $BRANCHS
+          for BRANCH in $BRANCHS ; do
+            if [[ "$BRANCH" == "main" ]]; then
+              exit 0
+            fi
+          done
+          exit 1
+
       - id: get_branches
         name: Get branches containing commit
         run: |
