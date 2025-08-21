@@ -6,11 +6,6 @@ on:
       - 'v*.*.*'
 
 
-
-
-
-      
-
 jobs:
   prod_deploy:
     runs-on: ubuntu-latest
