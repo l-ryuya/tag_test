@@ -1,42 +1,25 @@
-name: Example
-
 on:
   push:
     tags:
       - 'v*.*.*'
 
-permissions:
-  contents: write
-
 jobs:
   prod_deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - name: Checkout main branch
+      - name: Checkout ref (branch or tag)
         uses: actions/checkout@v3
         with:
-          ref: main
+          ref: ${{ github.ref }}
           fetch-depth: 0
-      - name: Check tagged branch
-        run: |
-          BRANCHS=$(git branch --contains ${{ github.ref_name }})
-          set -- $BRANCHS
-          for BRANCH in $BRANCHS ; do
-            if [[ "$BRANCH" == "main" ]]; then
-              exit 0
-            fi
-          done
-          exit 1
-
-      - name: Checkout
-        uses: actions/checkout@v3
 
       - id: get_branches
         name: Get branches containing commit
         run: |
-          BRANCHES=$(git branch --contains ${{ github.sha }})
+          BRANCHES=$(git branch --contains ${{ github.sha }} | tr -d ' *')
           echo "branches=$BRANCHES" >> $GITHUB_OUTPUT
-
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -50,11 +33,12 @@ jobs:
         run: |
           mkdir -p out
           echo "<!DOCTYPE html>" > out/index.html
-          echo "<html><head><title>API Docs for ${{ github.ref_name }}</title></head><body>" >> out/index.html
-          echo "<h1>API Docs for tag ${{ github.ref_name }}</h1>" >> out/index.html
+          echo "<html><head><title>API Docs for $REF_NAME</title></head><body>" >> out/index.html
+          echo "<h1>API Docs for tag $REF_NAME</h1>" >> out/index.html
           echo "<h1>Version: $BRANCHES</h1>" >> out/index.html
           echo "</body></html>" >> out/index.html
         env:
+          REF_NAME: ${{ github.ref_name }}
           BRANCHES: ${{ steps.get_branches.outputs.branches }}
 
       - name: Deploy to GitHub Pages
