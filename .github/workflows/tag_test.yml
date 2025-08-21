@@ -12,12 +12,6 @@ jobs:
   prod_deploy:
     runs-on: ubuntu-latest
     steps:
-      - id: get_branches
-        name: Get branches containing commit
-        run: |
-          BRANCHES=$(git branch --contains ${{ github.sha }})
-          echo "branches=$BRANCHES" >> $GITHUB_OUTPUT
-
       - name: Checkout main branch
         uses: actions/checkout@v3
         with:
@@ -36,6 +30,13 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v3
+
+      - id: get_branches
+        name: Get branches containing commit
+        run: |
+          BRANCHES=$(git branch --contains ${{ github.sha }})
+          echo "branches=$BRANCHES" >> $GITHUB_OUTPUT
+
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
