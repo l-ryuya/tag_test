@@ -12,6 +12,12 @@ jobs:
   prod_deploy:
     runs-on: ubuntu-latest
     steps:
+      - id: get_branches
+        name: Get branches containing commit
+        run: |
+          BRANCHES=$(git branch --contains ${{ github.sha }})
+          echo "branches=$BRANCHES" >> $GITHUB_OUTPUT
+
       - name: Checkout main branch
         uses: actions/checkout@v3
         with:
@@ -45,7 +51,10 @@ jobs:
           echo "<!DOCTYPE html>" > out/index.html
           echo "<html><head><title>API Docs for ${{ github.ref_name }}</title></head><body>" >> out/index.html
           echo "<h1>API Docs for tag ${{ github.ref_name }}</h1>" >> out/index.html
+          echo "<h1>Version: $BRANCHES</h1>" >> out/index.html
           echo "</body></html>" >> out/index.html
+        env:
+          BRANCHES: ${{ steps.get_branches.outputs.branches }}
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
