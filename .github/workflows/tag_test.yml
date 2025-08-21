@@ -2,12 +2,12 @@ name: Example
 
 on:
   push:
-    # tags:
-    #   - 'v*.*.*'
+    tags:
+      - 'v*.*.*'
 
 permissions:
   contents: write
-  
+
 jobs:
   prod_deploy:
     runs-on: ubuntu-latest
