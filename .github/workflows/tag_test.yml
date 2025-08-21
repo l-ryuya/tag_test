@@ -1,0 +1,53 @@
+name: Example
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  prod_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Check tagged branch
+        run: |
+          BRANCHS=$(git branch --contains ${{ github.ref_name }})
+          set -- $BRANCHS
+          for BRANCH in $BRANCHS ; do
+            if [[ "$BRANCH" == "main" ]]; then
+              exit 0
+            fi
+          done
+          exit 1
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Redocly CLI
+        run: npm install -g @redocly/cli
+
+      - name: Generate HTML files with Redocly
+        run: |
+          mkdir -p out
+          echo "<!DOCTYPE html>" > out/index.html
+          echo "<html><head><title>API Docs for ${{ github.ref_name }}</title></head><body>" >> out/index.html
+          echo "<h1>API Docs for tag ${{ github.ref_name }}</h1>" >> out/index.html
+          echo "</body></html>" >> out/index.html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
+          destination_dir: ${{ github.ref_name }}
+          publish_branch: gh-pages
