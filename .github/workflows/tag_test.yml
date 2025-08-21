@@ -2,8 +2,8 @@ name: Example
 
 on:
   push:
-    tags:
-      - 'v*.*.*'
+    # tags:
+    #   - 'v*.*.*'
 
 jobs:
   prod_deploy:
