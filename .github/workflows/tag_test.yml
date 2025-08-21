@@ -49,7 +49,7 @@ jobs:
           echo "<!DOCTYPE html>" > out/index.html
           echo "<html><head><title>API Docs for $REF_NAME</title></head><body>" >> out/index.html
           echo "<h1>Version: $BRANCHES</h1>" >> out/index.html
-          echo "<h1>Developからのmearge</h1>" >> out/index.html
+          echo "<h1>mainでpush</h1>" >> out/index.html
           echo "</body></html>" >> out/index.html
         env:
           REF_NAME: ${{ github.ref_name }}
