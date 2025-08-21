@@ -32,7 +32,7 @@ jobs:
       - id: get_branches
         name: Get branches containing commit
         run: |
-          BRANCHES=$(git branch --contains ${{ github.sha }} | tr -d ' *')
+          BRANCHES=$(git branch --contains ${{ github.sha }})
           echo "branches=$BRANCHES" >> $GITHUB_OUTPUT
 
       - name: Setup Node.js
@@ -48,8 +48,8 @@ jobs:
           mkdir -p out
           echo "<!DOCTYPE html>" > out/index.html
           echo "<html><head><title>API Docs for $REF_NAME</title></head><body>" >> out/index.html
-          echo "<h1>API Docs for tag $REF_NAME</h1>" >> out/index.html
           echo "<h1>Version: $BRANCHES</h1>" >> out/index.html
+          echo "<h1>Developからのmearge</h1>" >> out/index.html
           echo "</body></html>" >> out/index.html
         env:
           REF_NAME: ${{ github.ref_name }}
