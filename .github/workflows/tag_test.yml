@@ -8,6 +8,8 @@ on:
 
 jobs:
   prod_deploy:
+    if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v') && github.event.base_ref == 'refs/heads/main'
+
     runs-on: ubuntu-latest
     permissions:
       contents: write
